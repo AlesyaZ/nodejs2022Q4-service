@@ -9,10 +9,12 @@ import {
   HttpCode,
   HttpStatus,
   ParseUUIDPipe,
+  ValidationPipe,
 } from '@nestjs/common';
+import { StatusCodes } from 'http-status-codes';
 import { AlbumsService } from './albums.service';
-import { CreateAlbumDto } from './dto/create-album.dto';
-import { UpdateAlbumDto } from './dto/update-album.dto';
+import { CreateAlbumDto } from './dto/album.dto';
+import { UpdateAlbumDto } from './dto/album.dto';
 import { Album } from './entities/album.entity';
 
 @Controller('albums')
@@ -33,7 +35,7 @@ export class AlbumsController {
 
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  async getAlbum(@Param('id', ParseUUIDPipe) id: string) {
+  async getAlbum(@Param('id', ParseUUIDPipe) id: string): Promise<Album> {
     return this.albumsService.getAlbum(id);
   }
 
@@ -41,13 +43,14 @@ export class AlbumsController {
   @HttpCode(HttpStatus.OK)
   async updateAlbum(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() updateAlbumDto: UpdateAlbumDto,
+    @Body(ValidationPipe) updateAlbumDto: UpdateAlbumDto,
   ): Promise<Album> {
     return await this.albumsService.updateAlbum(id, updateAlbumDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.albumsService.remove(+id);
+  @HttpCode(StatusCodes.NO_CONTENT)
+  async removeAlbums(@Param('id', ParseUUIDPipe) id: string) {
+    await this.albumsService.removeAlbums(id);
   }
 }

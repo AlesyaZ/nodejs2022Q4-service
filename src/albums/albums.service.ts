@@ -1,12 +1,14 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateAlbumDto } from './dto/create-album.dto';
-import { UpdateAlbumDto } from './dto/update-album.dto';
+import { CreateAlbumDto, UpdateAlbumDto } from './dto/album.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { StoreService } from 'src/store/store.service';
 import { Album } from './entities/album.entity';
+import { TracksService } from 'src/tracks/tracks.service';
+import { Track } from 'src/tracks/entities/track.entity';
 
 @Injectable()
 export class AlbumsService {
+  constructor(private trackService: TracksService) {}
   async createAlbum(createAlbumDto: CreateAlbumDto): Promise<Album> {
     const album = {
       id: uuidv4(),
@@ -48,7 +50,24 @@ export class AlbumsService {
 
     return await album;
   }
-  remove(id: number) {
-    return `This action removes a #${id} album`;
+
+  async removeAlbums(id: string): Promise<void> {
+    const album = await this.getAlbum(id);
+
+    if (!album) {
+      throw new HttpException('Not found album', HttpStatus.NOT_FOUND);
+    }
+
+    const tracks = await this.trackService.getTracks();
+
+    tracks.forEach((track: Track) => {
+      if (track.albumId === album.id) {
+        track.albumId = null;
+      }
+    });
+
+    StoreService.albums = StoreService.albums.filter(
+      (album) => album.id !== id,
+    );
   }
 }

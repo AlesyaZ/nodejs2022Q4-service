@@ -1,3 +1,4 @@
+import { PartialType } from '@nestjs/mapped-types';
 import {
   IsNumber,
   IsString,
@@ -21,3 +22,5 @@ export class CreateAlbumDto {
   @Min(0)
   year: number;
 }
+
+export class UpdateAlbumDto extends PartialType(CreateAlbumDto) {}
