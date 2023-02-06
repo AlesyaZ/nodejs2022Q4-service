@@ -1,26 +1,64 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { StoreService } from 'src/store/store.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { User } from './entities/user.entity';
 
 @Injectable()
 export class UsersService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  async createUser(createUserDto: CreateUserDto) {
+    const users = new User(createUserDto);
+
+    StoreService.users.push(users);
+
+    return users;
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async getUsers() {
+    return await StoreService.users;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async getUser(uuid: string): Promise<User> {
+    const user = StoreService.users.find((user: User) => user.id === uuid);
+
+    if (!user) {
+      throw new HttpException('Not found user', HttpStatus.NOT_FOUND);
+    }
+
+    return await user;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async updateUser(uuid: string, updateUserDto: UpdateUserDto): Promise<User> {
+    const user = StoreService.users.find((user: User) => user.id === uuid);
+
+    if (!user) {
+      throw new HttpException('Not found user', HttpStatus.NOT_FOUND);
+    }
+
+    if (user.password !== updateUserDto.oldPassword) {
+      throw new HttpException('Incorrect password', HttpStatus.FORBIDDEN);
+    }
+
+    user.password = updateUserDto.newPassword;
+    user.version += 1;
+    user.updatedAt = Date.now();
+
+    const userID = StoreService.users.findIndex(
+      (user: User) => user.id == uuid,
+    );
+
+    StoreService.users.splice(userID, 1, user);
+
+    return user;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async removeUser(id: string): Promise<User[]> {
+    const userID = StoreService.users.findIndex((user: User) => user.id == id);
+
+    if (userID === -1) {
+      throw new HttpException('Not found user', HttpStatus.NOT_FOUND);
+    }
+
+    return await StoreService.users.splice(userID, 1);
   }
 }
