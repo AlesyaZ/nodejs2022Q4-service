@@ -19,24 +19,23 @@ import { StatusCodes } from 'http-status-codes';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly userService: UsersService) {}
-
+  constructor(private readonly usersService: UsersService) {}
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async createUser(@Body() createUserDto: CreateUserDto): Promise<User> {
-    return await this.userService.createUser(createUserDto);
+    return await this.usersService.createUser(createUserDto);
   }
 
   @Get()
   @HttpCode(HttpStatus.OK)
   async getUsers(): Promise<User[]> {
-    return await this.userService.getUsers();
+    return await this.usersService.getUsers();
   }
 
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   async getUser(@Param('id', ParseUUIDPipe) id: string): Promise<User> {
-    return this.userService.getUser(id);
+    return this.usersService.getUser(id);
   }
 
   @Put(':id')
@@ -45,12 +44,12 @@ export class UsersController {
     @Param('id', ParseUUIDPipe) id: string,
     @Body(ValidationPipe) updateUserDto: UpdateUserDto,
   ): Promise<User> {
-    return this.userService.updateUser(id, updateUserDto);
+    return this.usersService.updateUser(id, updateUserDto);
   }
 
   @Delete(':id')
   @HttpCode(StatusCodes.NO_CONTENT)
   async removeUser(@Param('id', ParseUUIDPipe) id: string): Promise<User[]> {
-    return await this.userService.removeUser(id);
+    return await this.usersService.removeUser(id);
   }
 }

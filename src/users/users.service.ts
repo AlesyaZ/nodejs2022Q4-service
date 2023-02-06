@@ -18,8 +18,8 @@ export class UsersService {
     return await StoreService.users;
   }
 
-  async getUser(uuid: string): Promise<User> {
-    const user = StoreService.users.find((user: User) => user.id === uuid);
+  async getUser(id: string): Promise<User> {
+    const user = StoreService.users.find((user: User) => user.id === id);
 
     if (!user) {
       throw new HttpException('Not found user', HttpStatus.NOT_FOUND);
@@ -28,8 +28,8 @@ export class UsersService {
     return await user;
   }
 
-  async updateUser(uuid: string, updateUserDto: UpdateUserDto): Promise<User> {
-    const user = StoreService.users.find((user: User) => user.id === uuid);
+  async updateUser(id: string, updateUserDto: UpdateUserDto): Promise<User> {
+    const user = await this.getUser(id);
 
     if (!user) {
       throw new HttpException('Not found user', HttpStatus.NOT_FOUND);
@@ -43,9 +43,7 @@ export class UsersService {
     user.version += 1;
     user.updatedAt = Date.now();
 
-    const userID = StoreService.users.findIndex(
-      (user: User) => user.id == uuid,
-    );
+    const userID = StoreService.users.findIndex((user: User) => user.id == id);
 
     StoreService.users.splice(userID, 1, user);
 
