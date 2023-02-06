@@ -8,7 +8,13 @@
 ## Downloading
 
 ```
-git clone {repository URL}
+git clone https://github.com/AlesyaZ/nodejs2022Q4-service.git
+```
+
+## Switch to branch
+
+```
+git checkout develop
 ```
 
 ## Installing NPM modules
