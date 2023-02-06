@@ -1,26 +1,55 @@
-import { Injectable } from '@nestjs/common';
-import { CreateArtistDto } from './dto/create-artist.dto';
-import { UpdateArtistDto } from './dto/update-artist.dto';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { StoreService } from 'src/store/store.service';
+import { CreateArtistDto, UpdateArtistDto } from './dto/artist.dto';
+import { v4 as uuidv4 } from 'uuid';
+import { Artist } from './entities/artist.entity';
 
 @Injectable()
 export class ArtistsService {
-  create(createArtistDto: CreateArtistDto) {
-    return 'This action adds a new artist';
+  async createArtist(createArtistDto: CreateArtistDto): Promise<Artist> {
+    const artist = {
+      id: uuidv4(),
+      ...createArtistDto,
+    };
+
+    StoreService.artists.push(artist);
+
+    return artist;
   }
 
-  findAll() {
-    return `This action returns all artists`;
+  async getArtists(): Promise<Artist[]> {
+    return await StoreService.artists;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} artist`;
+  async getArtist(id: string): Promise<Artist> {
+    const artist = StoreService.artists.find(
+      (artist: Artist) => artist.id === id,
+    );
+
+    if (!artist) {
+      throw new HttpException('Not found artist', HttpStatus.NOT_FOUND);
+    }
+
+    return await artist;
   }
 
-  update(id: number, updateArtistDto: UpdateArtistDto) {
-    return `This action updates a #${id} artist`;
+  async updateArtist(
+    id: string,
+    updateArtistDto: UpdateArtistDto,
+  ): Promise<Artist> {
+    const artist = await this.getArtist(id);
+
+    if (!artist) {
+      throw new HttpException('Not found artist', HttpStatus.NOT_FOUND);
+    }
+
+    artist.grammy = updateArtistDto.grammy;
+    artist.name = updateArtistDto.name;
+
+    return await artist;
   }
 
-  remove(id: number) {
+  removeArtists(id: number) {
     return `This action removes a #${id} artist`;
   }
 }

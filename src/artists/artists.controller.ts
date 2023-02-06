@@ -3,40 +3,54 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
+  HttpStatus,
+  HttpCode,
+  ParseUUIDPipe,
+  Put,
 } from '@nestjs/common';
+import { StatusCodes } from 'http-status-codes';
 import { ArtistsService } from './artists.service';
-import { CreateArtistDto } from './dto/create-artist.dto';
-import { UpdateArtistDto } from './dto/update-artist.dto';
+import { CreateArtistDto, UpdateArtistDto } from './dto/artist.dto';
+import { Artist } from './entities/artist.entity';
 
 @Controller('artists')
 export class ArtistsController {
   constructor(private readonly artistsService: ArtistsService) {}
 
   @Post()
-  create(@Body() createArtistDto: CreateArtistDto) {
-    return this.artistsService.create(createArtistDto);
+  @HttpCode(HttpStatus.CREATED)
+  async createArtist(
+    @Body() createArtistDto: CreateArtistDto,
+  ): Promise<Artist> {
+    return await this.artistsService.createArtist(createArtistDto);
   }
 
   @Get()
-  findAll() {
-    return this.artistsService.findAll();
+  @HttpCode(HttpStatus.OK)
+  async getArtists(): Promise<Artist[]> {
+    return await this.artistsService.getArtists();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.artistsService.findOne(+id);
+  @HttpCode(HttpStatus.OK)
+  async getArtist(@Param('id', ParseUUIDPipe) id: string): Promise<Artist> {
+    return this.artistsService.getArtist(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateArtistDto: UpdateArtistDto) {
-    return this.artistsService.update(+id, updateArtistDto);
+  @Put(':id')
+  @HttpCode(HttpStatus.OK)
+  async updateArtist(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateArtistDto: UpdateArtistDto,
+  ): Promise<Artist> {
+    return await this.artistsService.updateArtist(id, updateArtistDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.artistsService.remove(+id);
+  @HttpCode(StatusCodes.NO_CONTENT)
+  async remove(@Param('id', ParseUUIDPipe) id: number): Promise<void> {
+    await this.artistsService.removeArtists(id);
   }
 }
