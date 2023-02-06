@@ -9,6 +9,7 @@ import {
   HttpCode,
   ParseUUIDPipe,
   Put,
+  ValidationPipe,
 } from '@nestjs/common';
 import { StatusCodes } from 'http-status-codes';
 import { ArtistsService } from './artists.service';
@@ -43,14 +44,14 @@ export class ArtistsController {
   @HttpCode(HttpStatus.OK)
   async updateArtist(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() updateArtistDto: UpdateArtistDto,
+    @Body(ValidationPipe) updateArtistDto: UpdateArtistDto,
   ): Promise<Artist> {
     return await this.artistsService.updateArtist(id, updateArtistDto);
   }
 
   @Delete(':id')
   @HttpCode(StatusCodes.NO_CONTENT)
-  async remove(@Param('id', ParseUUIDPipe) id: number): Promise<void> {
-    await this.artistsService.removeArtists(id);
+  async removeArtist(@Param('id', ParseUUIDPipe) id: string) {
+    await this.artistsService.removeArtist(id);
   }
 }

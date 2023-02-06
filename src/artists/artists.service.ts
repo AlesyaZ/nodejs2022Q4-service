@@ -3,9 +3,18 @@ import { StoreService } from 'src/store/store.service';
 import { CreateArtistDto, UpdateArtistDto } from './dto/artist.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { Artist } from './entities/artist.entity';
+import { TracksService } from 'src/tracks/tracks.service';
+import { AlbumsService } from 'src/albums/albums.service';
+import { Album } from 'src/albums/entities/album.entity';
+import { Track } from 'src/tracks/entities/track.entity';
 
 @Injectable()
 export class ArtistsService {
+  constructor(
+    private tracksService: TracksService,
+    private albumsService: AlbumsService,
+  ) {}
+
   async createArtist(createArtistDto: CreateArtistDto): Promise<Artist> {
     const artist = {
       id: uuidv4(),
@@ -49,7 +58,30 @@ export class ArtistsService {
     return await artist;
   }
 
-  removeArtists(id: number) {
-    return `This action removes a #${id} artist`;
+  async removeArtist(id: string) {
+    const artist = await this.getArtist(id);
+
+    if (!artist) {
+      throw new HttpException('Not found artist', HttpStatus.NOT_FOUND);
+    }
+
+    const tracks = await this.tracksService.getTracks();
+    const albums = await this.albumsService.getAlbums();
+
+    albums.forEach((album: Album) => {
+      if (album.artistId === artist.id) {
+        album.artistId = null;
+      }
+    });
+
+    tracks.forEach((track: Track) => {
+      if (track.artistId === artist.id) {
+        track.artistId = null;
+      }
+    });
+
+    StoreService.artists = StoreService.artists.filter(
+      (artist: Artist) => artist.id !== id,
+    );
   }
 }
