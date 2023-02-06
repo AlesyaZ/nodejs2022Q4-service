@@ -12,12 +12,12 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { StatusCodes } from 'http-status-codes';
+import { Album } from 'src/core/models/album.model';
 import { AlbumsService } from './albums.service';
 import { CreateAlbumDto } from './dto/album.dto';
 import { UpdateAlbumDto } from './dto/album.dto';
-import { Album } from './entities/album.entity';
 
-@Controller('albums')
+@Controller('album')
 export class AlbumsController {
   constructor(private readonly albumsService: AlbumsService) {}
 

@@ -2,11 +2,11 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { StoreService } from 'src/store/store.service';
 import { CreateArtistDto, UpdateArtistDto } from './dto/artist.dto';
 import { v4 as uuidv4 } from 'uuid';
-import { Artist } from './entities/artist.entity';
 import { TracksService } from 'src/tracks/tracks.service';
 import { AlbumsService } from 'src/albums/albums.service';
-import { Album } from 'src/albums/entities/album.entity';
-import { Track } from 'src/tracks/entities/track.entity';
+import { Album } from 'src/core/models/album.model';
+import { Track } from 'src/core/models/track.model';
+import { Artist } from 'src/core/models/artist.model';
 
 @Injectable()
 export class ArtistsService {

@@ -14,10 +14,10 @@ import {
 import { TracksService } from './tracks.service';
 import { CreateTrackDto } from './dto/track.dto';
 import { UpdateTrackDto } from './dto/track.dto';
-import { Track } from './entities/track.entity';
 import { StatusCodes } from 'http-status-codes';
+import { Track } from 'src/core/models/track.model';
 
-@Controller('tracks')
+@Controller('track')
 export class TracksController {
   constructor(private readonly tracksService: TracksService) {}
 

@@ -2,9 +2,9 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateAlbumDto, UpdateAlbumDto } from './dto/album.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { StoreService } from 'src/store/store.service';
-import { Album } from './entities/album.entity';
+import { Album } from '../core/models/album.model';
 import { TracksService } from 'src/tracks/tracks.service';
-import { Track } from 'src/tracks/entities/track.entity';
+import { Track } from 'src/core/models/track.model';
 
 @Injectable()
 export class AlbumsService {

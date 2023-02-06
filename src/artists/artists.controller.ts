@@ -12,11 +12,11 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { StatusCodes } from 'http-status-codes';
+import { Artist } from 'src/core/models/artist.model';
 import { ArtistsService } from './artists.service';
 import { CreateArtistDto, UpdateArtistDto } from './dto/artist.dto';
-import { Artist } from './entities/artist.entity';
 
-@Controller('artists')
+@Controller('artist')
 export class ArtistsController {
   constructor(private readonly artistsService: ArtistsService) {}
 
