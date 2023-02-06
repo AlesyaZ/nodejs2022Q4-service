@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateTrackDto } from './dto/create-track.dto';
-import { UpdateTrackDto } from './dto/update-track.dto';
+import { CreateTrackDto } from './dto/track.dto';
+import { UpdateTrackDto } from './dto/track.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { StoreService } from 'src/store/store.service';
 import { Track } from './entities/track.entity';
@@ -12,6 +12,7 @@ export class TracksService {
       id: uuidv4(),
       ...createTrackDto,
     };
+
     StoreService.tracks.push(track);
 
     return await track;
@@ -35,7 +36,7 @@ export class TracksService {
     id: string,
     updateTrackDto: UpdateTrackDto,
   ): Promise<Track> {
-    const track = StoreService.tracks.find((track) => track.id == id);
+    const track = await this.getTrack(id);
 
     if (!track) {
       throw new HttpException('Not found track', HttpStatus.NOT_FOUND);
@@ -53,7 +54,15 @@ export class TracksService {
     return track;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} track`;
+  async removeTrack(id: string): Promise<void> {
+    const track = await this.getTrack(id);
+
+    if (!track) {
+      throw new HttpException('Not found track', HttpStatus.NOT_FOUND);
+    }
+
+    StoreService.tracks = StoreService.tracks.filter(
+      (track: Track) => track.id !== id,
+    );
   }
 }

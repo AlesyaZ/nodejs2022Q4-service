@@ -9,11 +9,13 @@ import {
   HttpCode,
   ParseUUIDPipe,
   Put,
+  ValidationPipe,
 } from '@nestjs/common';
 import { TracksService } from './tracks.service';
-import { CreateTrackDto } from './dto/create-track.dto';
-import { UpdateTrackDto } from './dto/update-track.dto';
+import { CreateTrackDto } from './dto/track.dto';
+import { UpdateTrackDto } from './dto/track.dto';
 import { Track } from './entities/track.entity';
+import { StatusCodes } from 'http-status-codes';
 
 @Controller('tracks')
 export class TracksController {
@@ -41,13 +43,14 @@ export class TracksController {
   @HttpCode(HttpStatus.OK)
   async update(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() updateTrackDto: UpdateTrackDto,
-  ) {
+    @Body(ValidationPipe) updateTrackDto: UpdateTrackDto,
+  ): Promise<Track> {
     return await this.tracksService.updateTrack(id, updateTrackDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.tracksService.remove(+id);
+  @HttpCode(StatusCodes.NO_CONTENT)
+  async removeTrack(@Param('id', ParseUUIDPipe) id: string) {
+    await this.tracksService.removeTrack(id);
   }
 }
